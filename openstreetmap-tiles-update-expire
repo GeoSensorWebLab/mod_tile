@@ -94,7 +94,7 @@ if [ $# -eq 1 ] ; then
     $OSMOSIS_BIN --read-replication-interval-init workingDirectory=$WORKOSM_DIR 1>&2 2> "$OSMOSISLOG"
     /usr/bin/wget "http://osm.personalwerk.de/replicate-sequences/?"$1"T00:00:00Z" -O $WORKOSM_DIR/state.txt
 else
-# make sure the lockfile is removed when we exit and then claim it
+    # make sure the lockfile is removed when we exit and then claim it
 
     if ! getlock "$LOCK_FILE"; then
         m_info "pid `cat $LOCK_FILE` still running"
@@ -107,6 +107,11 @@ else
     fi
 
     seq=`cat $WORKOSM_DIR/state.txt | grep sequenceNumber | /usr/bin/cut -d= -f2`
+
+    if ! [[ "$seq" =~ '^[0-9]+$' ]]; then
+        echo "Sequence number $seq is invalid. Check state.txt file."
+        exit 1
+    fi
 
     m_ok "start import from seq-nr $seq, replag is `osmosis-db_replag -h`"
 
