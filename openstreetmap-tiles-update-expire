@@ -85,6 +85,10 @@ freelock()
 
 
 if [ $# -eq 1 ] ; then
+    if [[ "$1" != [0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] ]]; then
+        echo "$1 is not a valid date, it should by YYYY-MM-DD format."
+        exit 1
+    fi
     m_info "Initialising Osmosis replication system to $1"
     mkdir $WORKOSM_DIR
     $OSMOSIS_BIN --read-replication-interval-init workingDirectory=$WORKOSM_DIR 1>&2 2> "$OSMOSISLOG"
