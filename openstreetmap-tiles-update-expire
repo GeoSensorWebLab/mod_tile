@@ -109,7 +109,7 @@ else
 
     seq=`cat $WORKOSM_DIR/state.txt | grep sequenceNumber | /usr/bin/cut -d= -f2`
 
-    if ! [[ "$seq" =~ '^[0-9]+$' ]]; then
+    if ! [[ "$seq" =~ ^[0-9]+$ ]]; then
         m_error "Sequence number $seq is invalid. Check state.txt file."
         exit 1
     fi
