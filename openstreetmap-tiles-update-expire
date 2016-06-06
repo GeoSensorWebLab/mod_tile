@@ -4,8 +4,8 @@ set -e
 
 #*************************************************************************
 #*************************************************************************
-OSMOSIS_BIN=osmosis
-OSM2PGSQL_BIN=osm2pgsql
+OSMOSIS_BIN=/usr/local/bin/osmosis
+OSM2PGSQL_BIN=/usr/local/bin/osm2pgsql
 OSM2PGSQL_OPTIONS=
 #OSM2PGSQL_OPTIONS="--flat-nodes /path/to/flatnodes --hstore"
 
@@ -31,16 +31,16 @@ EXPIRY_MAXZOOM=18
 
 m_info()
 {
-        echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ $1" >> "$RUNLOG"
+    echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ $1" >> "$RUNLOG"
 }
 
 m_error()
 {
     echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ [error] $1" >> "$RUNLOG"
-    
+
     m_info "resetting state"
-    /bin/cp $WORKOSM_DIR/last.state.txt $WORKOSM_DIR/state.txt || true
-    
+    cp $WORKOSM_DIR/last.state.txt $WORKOSM_DIR/state.txt || true
+
     rm "$CHANGE_FILE" || true
     rm "$EXPIRY_FILE.$$" || true
     rm "$LOCK_FILE"
@@ -59,7 +59,7 @@ getlock()
             return 1 #false
         fi
     fi
-    
+
     echo $$ >"$1"
     return 0 #true
 }
@@ -75,7 +75,7 @@ if [ $# -eq 1 ] ; then
     m_info "Initialising Osmosis replication system to $1"
     mkdir $WORKOSM_DIR
     $OSMOSIS_BIN --read-replication-interval-init workingDirectory=$WORKOSM_DIR 1>&2 2> "$OSMOSISLOG"
-    wget "http://osm.personalwerk.de/replicate-sequences/?"$1"T00:00:00Z" -O $WORKOSM_DIR/state.txt
+    /usr/bin/wget "http://osm.personalwerk.de/replicate-sequences/?"$1"T00:00:00Z" -O $WORKOSM_DIR/state.txt
 else
 # make sure the lockfile is removed when we exit and then claim it
 
@@ -89,19 +89,19 @@ else
         exit 2
     fi
 
-    seq=`cat $WORKOSM_DIR/state.txt | grep sequenceNumber | cut -d= -f2`
+    seq=`cat $WORKOSM_DIR/state.txt | grep sequenceNumber | /usr/bin/cut -d= -f2`
 
     m_ok "start import from seq-nr $seq, replag is `osmosis-db_replag -h`"
 
-    /bin/cp $WORKOSM_DIR/state.txt $WORKOSM_DIR/last.state.txt
+    cp $WORKOSM_DIR/state.txt $WORKOSM_DIR/last.state.txt
     m_ok "downloading diff"
-    
+
     if ! $OSMOSIS_BIN --read-replication-interval workingDirectory=$WORKOSM_DIR --simplify-change --write-xml-change $CHANGE_FILE 1>&2 2> "$OSMOSISLOG"; then
         m_error "Osmosis error"
     fi
-    
+
     m_ok "importing diff"
-    EXPIRY_METAZOOM=`expr $EXPIRY_MAXZOOM - 3`
+    EXPIRY_METAZOOM=`/usr/bin/expr $EXPIRY_MAXZOOM - 3`
     if ! $OSM2PGSQL_BIN -a --slim -e$EXPIRY_METAZOOM:$EXPIRY_METAZOOM $OSM2PGSQL_OPTIONS -o "$EXPIRY_FILE.$$" $CHANGE_FILE 1>&2 2> "$PGSQLLOG"; then
         m_error "osm2pgsql error"
     fi
@@ -109,15 +109,15 @@ else
     freelock "$LOCK_FILE"
 
     m_ok "expiring tiles"
-    if ! render_expired --min-zoom=$EXPIRY_MINZOOM --max-zoom=$EXPIRY_MAXZOOM --touch-from=$EXPIRY_MINZOOM -s /var/run/renderd.sock < "$EXPIRY_FILE.$$" 2>&1 | tail -8 >> "$EXPIRYLOG"; then
+    if ! /usr/local/bin/render_expired --min-zoom=$EXPIRY_MINZOOM --max-zoom=$EXPIRY_MAXZOOM --touch-from=$EXPIRY_MINZOOM -s /var/run/renderd.sock < "$EXPIRY_FILE.$$" 2>&1 | /usr/bin/tail -8 >> "$EXPIRYLOG"; then
         m_info "Expiry failed"
     fi
 
     rm "$EXPIRY_FILE.$$"
-    
-    m_ok "Done with import"
-    
 
-    
+    m_ok "Done with import"
+
+
+
 
 fi
