@@ -86,7 +86,7 @@ freelock()
 
 if [ $# -eq 1 ] ; then
     if [[ "$1" != [0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9] ]]; then
-        echo "$1 is not a valid date, it should by YYYY-MM-DD format."
+        m_info "$1 is not a valid date, it should by YYYY-MM-DD format."
         exit 1
     fi
     m_info "Initialising Osmosis replication system to $1"
@@ -109,7 +109,7 @@ else
     seq=`cat $WORKOSM_DIR/state.txt | grep sequenceNumber | /usr/bin/cut -d= -f2`
 
     if ! [[ "$seq" =~ '^[0-9]+$' ]]; then
-        echo "Sequence number $seq is invalid. Check state.txt file."
+        m_error "Sequence number $seq is invalid. Check state.txt file."
         exit 1
     fi
 
