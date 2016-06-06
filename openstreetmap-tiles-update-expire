@@ -2,6 +2,19 @@
 
 set -e
 
+# openstreetmap-tiles-update-expire will either initialize a replication system
+# or run a replication to sync the OSM master database to a local database.
+#
+# Run openstreetmap-tiles-update-expire with a single argument in YYYY-MM-DD
+# format to initialize the replication system to sync from that date. If you
+# just did an osm2pgsql import, then use the date of the planet file as your
+# argument to openstreetmap-tiles-update-expire.
+#
+# Run openstreetmap-tiles-update-expire with *no* arguments to have the script
+# automatically determine the previous sync timestamp and download an update
+# from OSM for a certain interval (interval is defined in
+# $WORKOSM_DIR/configuration.txt).
+#
 #*************************************************************************
 #*************************************************************************
 OSMOSIS_BIN=/usr/local/bin/osmosis
