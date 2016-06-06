@@ -27,7 +27,7 @@ LOG_DIR=/var/log/tiles/
 WORKOSM_DIR=$BASE_DIR/.osmosis
 RENDERD_SOCK=/var/run/renderd/renderd.sock
 
-LOCK_FILE=/tmp/openstreetmap-update-expire-lock.txt
+LOCK_FILE=/var/run/openstreetmap-update-expire-lock.txt
 CHANGE_FILE=$BASE_DIR/changes.osc.gz
 EXPIRY_FILE=$BASE_DIR/dirty_tiles
 STOP_FILE=$BASE_DIR/stop.txt
