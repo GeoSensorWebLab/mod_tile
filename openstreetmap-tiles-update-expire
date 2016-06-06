@@ -31,12 +31,12 @@ EXPIRY_MAXZOOM=18
 
 m_info()
 {
-    echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ $1" >> "$RUNLOG"
+    echo "[`date -Ins`] $$ $1" >> "$RUNLOG"
 }
 
 m_error()
 {
-    echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ [error] $1" >> "$RUNLOG"
+    echo "[`date -Ins`] $$ [error] $1" >> "$RUNLOG"
 
     m_info "resetting state"
     cp $WORKOSM_DIR/last.state.txt $WORKOSM_DIR/state.txt || true
@@ -49,7 +49,7 @@ m_error()
 
 m_ok()
 {
-    echo "[`date +"%Y-%m-%d %H:%M:%S"`] $$ $1" >> "$RUNLOG"
+    echo "[`date -Ins`] $$ $1" >> "$RUNLOG"
 }
 
 getlock()
