@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -116,8 +116,4 @@ else
     rm "$EXPIRY_FILE.$$"
 
     m_ok "Done with import"
-
-
-
-
 fi
